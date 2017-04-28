@@ -63,6 +63,10 @@ class PhoneValidator extends Validator
         $phoneUtil = PhoneNumberUtil::getInstance();
         try {
             $numberProto = $phoneUtil->parse($model->$attribute, $country);
+            if ($phoneUtil->getRegionCodeForNumber($numberProto) != $country) {
+                $this->addError($model, $attribute, \Yii::t('app', 'Phone number does not seem to be a valid phone number for this country'));
+                return false;
+            }
             if ($phoneUtil->isValidNumber($numberProto)) {
                 if (is_numeric($this->format)) {
                     $model->$attribute = $phoneUtil->format($numberProto, $this->format);
